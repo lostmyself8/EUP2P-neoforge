@@ -1,0 +1,146 @@
+plugins {
+    id 'java-library'
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.neoforged.gradle.userdev' version '7.0.145'
+}
+
+tasks.named('wrapper', Wrapper).configure {
+    distributionType = Wrapper.DistributionType.BIN
+}
+
+version = mod_version
+group = mod_group_id
+
+repositories {
+    mavenLocal()
+}
+
+base {
+    archivesName = mod_id
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+runs {
+    configureEach {
+        systemProperty 'forge.logging.markers', 'REGISTRIES'
+
+        systemProperty 'forge.logging.console.level', 'debug'
+
+        modSource project.sourceSets.main
+    }
+
+    client {
+        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
+    }
+
+    server {
+        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
+        programArgument '--nogui'
+    }
+
+    gameTestServer {
+        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
+    }
+
+    data {
+        programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+repositories {
+    //ae2
+    maven {
+        name "Modmaven"
+        url "https://modmaven.dev/"
+        content {
+            includeGroup 'appeng'
+        }
+    }
+    //jei
+    maven { url 'https://modmaven.dev/' }
+    //jade
+    maven { url = "https://api.modrinth.com/maven" }
+    //gt
+    maven { url = 'https://maven.firstdarkdev.xyz/snapshots'
+        content {
+            includeGroup 'com.lowdragmc.ldlib'
+            includeGroup 'com.gregtechceu.gtceu'
+            includeGroup 'dev.toma.configuration'
+        }
+    }
+    //re
+    maven { url = 'https://maven.tterrag.com/'
+        content {
+            includeGroup "com.tterrag.registrate"
+        }
+    }
+    //curse
+    maven {
+        url "https://cursemaven.com"
+    }
+}
+
+dependencies {
+    implementation "net.neoforged:neoforge:${neo_version}"
+//    localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+    localRuntime "curse.maven:jade-324717:5591256"
+
+    implementation "curse.maven:ldlib-626676:6260254"
+    implementation "curse.maven:configuration-444699:5587875"
+    implementation "curse.maven:gregtechceu-modern-890405:5493708"
+
+    implementation "curse.maven:applied-energistics-2-223794:5593097"
+}
+
+tasks.withType(ProcessResources).configureEach {
+    var replaceProperties = [
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version            : neo_version,
+            neo_version_range      : neo_version_range,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            mod_authors            : mod_authors,
+            mod_description        : mod_description
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/neoforge.mods.toml']) {
+        expand replaceProperties
+    }
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/repo"
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
