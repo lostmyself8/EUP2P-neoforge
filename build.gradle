@@ -22,6 +22,7 @@ base {
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
 runs {
     configureEach {
         systemProperty 'forge.logging.markers', 'REGISTRIES'
@@ -91,13 +92,13 @@ repositories {
 dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
 //    localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
-    localRuntime "curse.maven:jade-324717:5591256"
+    runtimeOnly "curse.maven:jade-324717:6291517"
 
-    implementation "curse.maven:ldlib-626676:6260254"
-    implementation "curse.maven:configuration-444699:5587875"
-    implementation "curse.maven:gregtechceu-modern-890405:5493708"
+    runtimeOnly "curse.maven:ldlib-626676:5782845"
+    runtimeOnly "curse.maven:configuration-444699:5774726"
+    implementation "curse.maven:gregtechceu-modern-890405:5812613"
 
-    implementation "curse.maven:applied-energistics-2-223794:5593097"
+    implementation "curse.maven:applied-energistics-2-223794:6451686"
 }
 
 tasks.withType(ProcessResources).configureEach {

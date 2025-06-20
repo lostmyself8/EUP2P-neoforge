@@ -7,8 +7,8 @@ import appeng.core.AppEng;
 import appeng.items.parts.PartModels;
 import appeng.parts.p2p.CapabilityP2PTunnelPart;
 import appeng.parts.p2p.P2PModels;
+import com.gregtechceu.gtceu.api.capability.GTCapability;
 import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
-import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import net.minecraft.core.Direction;
 
@@ -82,7 +82,7 @@ public class EUP2PTunnelPart extends CapabilityP2PTunnelPart<EUP2PTunnelPart, IE
                     }
                 }
                 if (total > 0) {
-                    EUP2PTunnelPart.this.queueTunnelDrain(PowerUnit.FE, (double) total * voltage * ConfigHolder.INSTANCE.compat.energy.euToFeRatio);
+                    EUP2PTunnelPart.this.deductEnergyCost((double) total * voltage * ConfigHolder.INSTANCE.compat.energy.euToFeRatio, PowerUnit.FE);
                 }
                 return total;
             }
